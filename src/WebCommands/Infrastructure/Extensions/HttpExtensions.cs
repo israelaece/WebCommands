@@ -16,5 +16,10 @@ namespace WebCommands.Infrastructure.Extensions
             using (var jr = new JsonTextReader(sr))
                 return serializer.Deserialize(jr, commandType) as Command;
         }
+
+        public static string ToJson(this object @object)
+        {
+            return JsonConvert.SerializeObject(@object);
+        }
     }
 }

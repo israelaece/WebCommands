@@ -9,6 +9,19 @@ namespace WebCommands.Dominio.Comandos
         public string DocumentoDoCliente { get; set; }
 
         public IDictionary<string, int> Itens { get; set; }
+
+        public override ValidationResult Validate()
+        {
+            var result = new ValidationResult();
+
+            if (string.IsNullOrWhiteSpace(this.DocumentoDoCliente))
+                result.Add(new ValidationResult.Error() { Message = "Documento não informado." });
+
+            if (this.Itens?.Count == 0)
+                result.Add(new ValidationResult.Error() { Message = "Nenhum item informado." });
+
+            return result;
+        }
     }
 
     public class EmitirNotaFiscalHandler : IHandler<EmitirNotaFiscal>

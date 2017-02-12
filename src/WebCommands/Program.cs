@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Net.Http;
 using WebCommands.Dominio.Comandos;
 using WebCommands.Dominio.Repositorios;
 using WebCommands.Infrastructure.Bus;
@@ -38,7 +39,17 @@ namespace WebCommands
                                 return;
                             }
 
-                            await bus.Send(context.Request.ReadAsCommand(bus.Handlers[action]));
+                            var command = context.Request.ReadAsCommand(bus.Handlers[action]);
+                            var validateResult = command.Validate();
+
+                            if (!validateResult.IsValid)
+                            {
+                                context.Response.StatusCode = 400;
+                                await context.Response.WriteAsync(validateResult.ToJson());
+                                return;
+                            }
+
+                            await bus.Send(command);
 
                             context.Response.StatusCode = 202;
                         }));
